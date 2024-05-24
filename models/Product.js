@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 // const tagsSchema = require('./product/tagsSchema');
 // const discountSchema = require('./product/discountSchema');
 // const shippingInfoSchema = require('./product/shippingInfoSchema');
 // const Review = require('./reviewSchema');
+
+const Schema = mongoose.Schema;
 
 const productSchema = Schema(
     {
