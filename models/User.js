@@ -10,17 +10,18 @@ const userSchema = Schema(
         email: { type: String, required: true },
         password: { type: String, required: true },
         name: { type: String, required: true },
-        level: { type: number, required: true , default: 0},
+        level: { type: number, required: true, default: 0 },
         privilege: { type: string, required: true, default: "customer" }, // admin || customer
     },
     { timestamps: true }
 )
 
-// 비밀번호 제거 + a
-userSchema.methods.toJSON = function() {
+// // toJSON 메서드 정의
+userSchema.methods.toJSON = function () {
     const obj = this._doc;
     delete obj.password
     delete obj.__v
+    return obj;
 }
 
 // // 토큰 생성

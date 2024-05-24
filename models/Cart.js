@@ -18,6 +18,7 @@ const cartSchema = Schema(
     { timestamps: true }
 );
 
+// toJSON 메서드 정의
 cartSchema.methods.toJSON = function () {
     const obj = this._doc;
     delete obj.__v;

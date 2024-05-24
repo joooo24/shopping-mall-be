@@ -27,7 +27,7 @@ const productSchema = Schema(
     { timestamps: true }
 )
 
-// toJSON
+// toJSON 메서드 정의
 productSchema.methods.toJSON = function () {
     const obj = this._doc;
     delete obj.__v;
