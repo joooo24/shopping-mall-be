@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const indexRouter = require("./routes/index");
 const app = express();
 
 // cors, dotenv, bodyParser 설정
@@ -9,6 +10,9 @@ app.use(cors());
 require("dotenv").config();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json()); // req.body 객체 인식
+
+// 라우터 연결
+app.use("/api", indexRouter)
 
 // MongoDB 연결
 const mongoURI = process.env.LOCAL_DB_ADDRESS;
