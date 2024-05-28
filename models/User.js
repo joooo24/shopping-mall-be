@@ -10,8 +10,8 @@ const userSchema = Schema(
         email: { type: String, required: true },
         password: { type: String, required: true },
         name: { type: String, required: true },
-        level: { type: number, required: true, default: 0 },
-        privilege: { type: string, required: true, default: "customer" }, // admin || customer
+        level: { type: Number, required: true, default: 0 },
+        privilege: { type: String, required: true, default: "customer" }, // admin || customer
     },
     { timestamps: true }
 )
