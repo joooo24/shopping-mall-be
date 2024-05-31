@@ -31,8 +31,20 @@ userController.createUser = async (req, res) => {
 // 유정 정보 받아오기
 userController.getUser = async (req, res) => {
     try {
+        // req에서 userId 값 받아오기
+        const { userId } = req
 
-        return res.status(200).json({ status: "success" })
+        // userId로 유저 정보 찾기
+        const user = await User.findById(userId)
+
+        // 유저가 있다면? 유저 값 넘겨주기
+        if (user) {
+            return res.status(200).json({ status: "success", user })
+        }
+
+        // 유저가 없다면? 에러
+        throw new Error("Invalid token")
+
     } catch (err) {
         res.status(500).json({ status: "fail", error: err, message: err.message });
     }

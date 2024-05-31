@@ -9,6 +9,6 @@ const authController = require('../controllers/auth.controller');
 router.post('/', userController.createUser);
 
 // 토근 검증 -> 유저 정보 받아오기
-router.post('/me', authController.authenticate, userController.getUser);
+router.get('/me', authController.authenticate, userController.getUser);
 
 module.exports = router;
