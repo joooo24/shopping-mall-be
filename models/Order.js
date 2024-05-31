@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const User = require('./user'); // User인데 user로 해야 경로 오류 안나는 이슈
+const User = require('./User');
 const Cart = require('./Cart');
 
 const orderSchema = Schema(
