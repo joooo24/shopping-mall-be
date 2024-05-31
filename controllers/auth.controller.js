@@ -43,7 +43,6 @@ authController.authenticate = async (req, res, next) => {
 
         // 토큰 값 체크
         if (!tokenString) {
-            console.log("ttttttttttttttttt")
             return res.status(401).json({ status: "fail", message: "토큰이 없습니다." });
         }
 
@@ -56,12 +55,10 @@ authController.authenticate = async (req, res, next) => {
             if (error) {
                 throw new Error("### invalid token: " + error.message);
             }
-            console.log("payloadpayloadpayloadpayloadpayload", payload)
+
             // 디코딩 한 값: payload
             return payload
         });
-
-        console.log("decodedToken!!!!!!!!!!!!!", decodedToken)
 
         // 디코딩된 토큰에서 유저의 _id를 추출
         const userId = decodedToken._id;
