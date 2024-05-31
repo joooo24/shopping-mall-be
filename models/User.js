@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-// const jwt = require('jsonwebtoken');
-// require('dotenv').config();
-// const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 const Schema = mongoose.Schema;
 
@@ -24,11 +24,11 @@ userSchema.methods.toJSON = function () {
     return obj;
 }
 
-// // 토큰 생성
-// userSchema.methods.generateToken = function () {
-//     const token = jwt.sign({ _id: this._id }, JWT_SECRET_KEY, { expiresIn: '1h' });
-//     return token;
-// };
+// 토큰 생성
+userSchema.methods.generateToken = function () {
+    const token = jwt.sign({ _id: this._id }, JWT_SECRET_KEY, { expiresIn: '1h' });
+    return token;
+};
 
 // User 모델 생성
 const User = mongoose.model('User', userSchema);
