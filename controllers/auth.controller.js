@@ -2,6 +2,7 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const authController = {};
 
+// 이메일로그인
 authController.loginWithEmail = async (req, res) => {
     try {
         // email로 유저 정보 가져오기
@@ -24,6 +25,16 @@ authController.loginWithEmail = async (req, res) => {
 
         throw new Error("아이디 또는 비밀번호가 일치하지 않습니다");
 
+    } catch (err) {
+        res.status(500).json({ status: "fail", error: err, message: err.message });
+    }
+}
+
+// 토근 검증
+authController.authenticate = async (req, res, next) => {
+    try {
+       
+        return res.status(200).json({ status: "success" })
     } catch (err) {
         res.status(500).json({ status: "fail", error: err, message: err.message });
     }

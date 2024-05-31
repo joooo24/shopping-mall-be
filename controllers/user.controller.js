@@ -28,4 +28,14 @@ userController.createUser = async (req, res) => {
     }
 }
 
+// 유정 정보 받아오기
+userController.getUser = async (req, res) => {
+    try {
+
+        return res.status(200).json({ status: "success" })
+    } catch (err) {
+        res.status(500).json({ status: "fail", error: err, message: err.message });
+    }
+}
+
 module.exports = userController;
