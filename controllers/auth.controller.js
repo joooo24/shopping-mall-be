@@ -73,4 +73,26 @@ authController.authenticate = async (req, res, next) => {
     }
 }
 
+// 어드민 체크
+authController.checkAdminPermission = async (req, res, next) => {
+    try {
+        // req에 userId 항목 가져오기
+        const { userId } = req;
+
+        // id로 유저 정보 찾기
+        const user = await User.findById(userId)
+
+        // 어드민이 아닐 경우
+        if (user.level !== "admin") {
+            throw new Error("페이지 권한이 없는 사용자입니다.")
+        }
+
+        // 어드민이 맞으면?
+        next();
+
+    } catch (err) {
+        res.status(500).json({ status: "fail", error: err, message: err.message });
+    }
+}
+
 module.exports = authController;
