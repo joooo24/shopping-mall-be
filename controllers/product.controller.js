@@ -41,4 +41,15 @@ productController.createProduct = async (req, res) => {
     }
 }
 
+// 모든 상품 조회
+productController.getProducts = async (req, res) => {
+    try {
+        const products = await Product.find({});
+        return res.status(200).json({ status: "success", products })
+
+    } catch (err) {
+        res.status(500).json({ status: "fail", error: err, message: err.message });
+    }
+}
+
 module.exports = productController;

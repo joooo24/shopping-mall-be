@@ -12,4 +12,9 @@ router.post('/',
     productController.createProduct
 );
 
+// 모든 상품 조회
+router.get('/',
+    productController.getProducts
+);
+
 module.exports = router;
