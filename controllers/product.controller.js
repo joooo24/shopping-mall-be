@@ -80,7 +80,7 @@ productController.getProducts = async (req, res) => {
         const productList = await query.exec(condition);
         response.data = productList;
 
-        return res.status(200).json({ status: "success", response })
+        return res.status(200).json(response)
     } catch (err) {
         res.status(500).json({ status: "fail", error: err, message: err.message });
     }
