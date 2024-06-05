@@ -57,6 +57,8 @@ productController.getProducts = async (req, res) => {
         // condition에 따라 상품을 조회 함
         let query = Product.find(condition);
 
+        // 응답 개체 생성
+        let response = { status: "success" };
 
         // ### page가 있을 경우
         // 현재 페이지에서 보여줄 첫 번째 항목을 결정하기 위한 로직
@@ -66,19 +68,19 @@ productController.getProducts = async (req, res) => {
             query.skip((page - PAGE_SIZE) * PAGE_SIZE).limit(PAGE_SIZE)
         }
 
-        // 총 데이터 개수
+        // 총 데이터 개수 -> 응답 데이터 추가
         const totalItemNum = await Product.find(condition).count();
-        response.totalItemNum = totalItemNum; // 응답 데이터 추가 -> response.totalItemNum
+        response.totalItemNum = totalItemNum;
 
-        // 총 페이지 개수
+        // 총 페이지 개수 -> 응답 데이터 추가
         const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE)
         response.totalPageNum = totalPageNum; // 응답 데이터 추가 -> response.totalPageNum
 
-        // condition 찾을 때까지 기다렸다가 실행
+        // condition 찾을 때까지 기다렸다가 실행 -> 응답 데이터 추가
         const productList = await query.exec(condition);
-        response.data = productList; // 응답 데이터 추가 -> response.data
+        response.data = productList;
 
-        return res.status(200).json({ status: "success",  productList, totalPageNum, totalItemNum })
+        return res.status(200).json({ status: "success", response })
     } catch (err) {
         res.status(500).json({ status: "fail", error: err, message: err.message });
     }
