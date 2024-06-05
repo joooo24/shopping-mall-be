@@ -43,8 +43,8 @@ productController.getProducts = async (req, res) => {
         // 페이지네이션 로직
         // '(현재 페이지 - 한 페이지에 보여주고싶은 개수) * 한 페이지에 보여주고싶은 개수'만큼 제외하고,
         // 현재 페이지에 보여주고싶은 개수만큼만 보여주겠다
-        if (page) {
-            query.skip((page - PAGE_SIZE) * PAGE_SIZE).limit(PAGE_SIZE);
+        if (page && page > 0) {
+            query.skip((page - 1) * PAGE_SIZE).limit(PAGE_SIZE);
         }
 
         // 총 데이터 개수 -> 응답 데이터 추가
