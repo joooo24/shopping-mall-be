@@ -1,7 +1,8 @@
 const { response } = require("express");
 const Product = require("../models/Product");
-const productController = {};
+
 const PAGE_SIZE = 5;
+const productController = {};
 
 // 상품 생성
 productController.createProduct = async (req, res) => {
@@ -105,14 +106,15 @@ productController.deleteProduct = async (req, res) => {
         const productId = req.params.id;
 
         // 상품 ID에 해당하는 상품을 찾아서 isDelete 값을 true로 변경 (논리 삭제)
-        const product = await Product.findByIdAndUpdate(
+        const product = await Product.updateOne(
             { _id: productId }, // 조건: 상품 ID
-            { isDelete: true }, // 업데이트할 데이터: isDelete 값을 true로 설정
-            { new: true }   // 업데이트된 후의 문서를 반환
+            { $set: { isDelete: true } } // 업데이트할 데이터: isDelete 값만 true로 설정
         );
 
         // 상품이 존재하지 않는 경우
-        if (!product) throw new Error("상품이 존재하지 않습니다.");
+        if (product.nModified === 0) {
+            throw new Error("상품이 존재하지 않습니다.");
+        }
 
         return res.status(200).json({ status: "success", data: product });
     } catch (err) {
