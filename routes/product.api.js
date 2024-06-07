@@ -12,9 +12,23 @@ router.post('/',
     productController.createProduct
 );
 
-// 모든 상품 조회
+// 상품 조회
 router.get('/',
     productController.getProducts
+);
+
+// 상품 수정
+router.put('/:id',
+    authController.authenticate,
+    authController.checkAdminPermission,
+    productController.updateProduct
+);
+
+// 상품 삭제 (isDelete값 변경)
+router.delete('/:id',
+    authController.authenticate,
+    authController.checkAdminPermission,
+    productController.updateProduct
 );
 
 module.exports = router;

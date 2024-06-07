@@ -73,4 +73,51 @@ productController.getProducts = async (req, res) => {
     }
 };
 
+// 상품 수정
+productController.updateProduct = async (req, res) => {
+    try {
+        // URL 파라미터로부터 상품 ID 가져오기 (:id 값)
+        const productId = req.params.id;
+
+        // body에서 상품 데이터 가져오기
+        const { sku, name, image, category, description, price, stock, status, isDelete } = req.body;
+
+        // 상품 ID에 해당하는 상품을 찾아서 업데이트
+        const product = await Product.findByIdAndUpdate(
+            { _id: productId }, // 조건: 상품 ID
+            { sku, name, image, category, description, price, stock, status, isDelete }, // 업데이트할 데이터
+            { new: true } // 업데이트된 데이터를 반환하도록 설정
+        )
+
+        // 상품이 존재하지 않는 경우
+        if (!product) throw new Error("상품이 존재하지 않습니다.")
+
+        return res.status(200).json({ status: "success", data: product });
+    } catch (err) {
+        res.status(500).json({ status: "fail", error: err, message: err.message });
+    }
+};
+
+// 상품 삭제
+productController.deleteProduct = async (req, res) => {
+    try {
+        // URL 파라미터로부터 상품 ID 가져오기 (:id 값)
+        const productId = req.params.id;
+
+        // 상품 ID에 해당하는 상품을 찾아서 isDelete 값을 true로 변경 (논리 삭제)
+        const product = await Product.findByIdAndUpdate(
+            { _id: productId }, // 조건: 상품 ID
+            { isDelete: true }, // 업데이트할 데이터: isDelete 값을 true로 설정
+            { new: true }   // 업데이트된 후의 문서를 반환
+        );
+
+        // 상품이 존재하지 않는 경우
+        if (!product) throw new Error("상품이 존재하지 않습니다.");
+
+        return res.status(200).json({ status: "success", data: product });
+    } catch (err) {
+        res.status(500).json({ status: "fail", error: err, message: err.message });
+    }
+};
+
 module.exports = productController;
