@@ -7,6 +7,7 @@ cartController.addItemToCart = async (req, res) => {
     try {
         const { userId } = req;
         const { productId, size, qty } = req.body;
+
         // 유저를 가지고 카트 찾기
         let cart = await Cart.findOne({ userId });
 

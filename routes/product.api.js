@@ -17,6 +17,11 @@ router.get('/',
     productController.getProducts
 );
 
+// 상품 상세 조회
+router.get('/:id',
+    productController.getProductDetail
+);
+
 // 상품 수정
 router.put('/:id',
     authController.authenticate,

@@ -74,6 +74,31 @@ productController.getProducts = async (req, res) => {
     }
 };
 
+// 상품 상세 조회
+productController.getProductDetail = async (req, res) => {
+    try {
+        // URL 파라미터로부터 상품 ID 가져오기 (:id 값)
+        const productId = req.params.id;
+
+        // 상품 ID에 해당하는 상품을 데이터베이스에서 조회
+        const product = await Product.findById(productId);
+
+        // 상품이 존재하지 않는 경우
+        if (!product) {
+            throw new Error("상품이 존재하지 않습니다.");
+        }
+
+        console.log("### productId", productId)
+        console.log("### product", product)
+
+        // 상품이 존재하는 경우 상세 정보를 클라이언트로 응답
+        return res.status(200).json({ status: "success", data: product });
+    } catch (err) {
+        // 에러 발생 시 에러 메시지와 함께 500 상태 코드로 응답
+        res.status(500).json({ status: "fail", error: err.message });
+    }
+};
+
 // 상품 수정
 productController.updateProduct = async (req, res) => {
     try {
