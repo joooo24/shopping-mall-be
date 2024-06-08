@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const Product = require('./Product');
-const User = require('./User');
+const mongoose = require("mongoose");
+const Product = require("./Product");
+const User = require("./User");
 
 const Schema = mongoose.Schema;
 
@@ -12,7 +12,7 @@ const cartSchema = Schema(
                 productId: { type: mongoose.ObjectId, ref: Product },
                 option: { type: String, required: true },
                 qty: { type: Number, required: true, default: 1 },
-            }
+            },
         ],
     },
     { timestamps: true }
@@ -26,5 +26,5 @@ cartSchema.methods.toJSON = function () {
 };
 
 // Cart 모델 생성
-const Cart = mongoose.model('Cart', cartSchema);
+const Cart = mongoose.model("Cart", cartSchema);
 module.exports = Cart;
