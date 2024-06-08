@@ -41,8 +41,14 @@ cartController.getItemToCart = async (req, res) => {
     try {
         const { userId } = req;
 
-        // 유저를 가지고 카트 찾기
-        const cart = await Cart.findOne({ userId });
+        // serId에 해당하는 cart 찾기 + items의 productId로 Product 정보 함께
+        const cart = await Cart.findOne({ userId }).populate({
+            path: "items", // populate 할 필드
+            populate: {
+                path: "productId", // 참조하는 객체의 필드
+                model: "Product", // 참조할 모델의 이름
+            },
+        });
 
         if (!cart) {
             // 장바구니가 비어있을 때는 실패 상태 코드 반환
