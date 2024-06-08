@@ -1,6 +1,6 @@
-const Cart = require('../models/Cart');
+const Cart = require("../models/Cart");
 
-const cartController = {}
+const cartController = {};
 
 // 장바구니 아이템 추가
 cartController.addItemToCart = async (req, res) => {
@@ -21,15 +21,35 @@ cartController.addItemToCart = async (req, res) => {
         const existItem = cart.items.find(
             // -> productId가 몽구스에서 사용하는 _id 값이여서 equals로 비교
             (item) => item.productId.equals(productId) && item.size === size
-        )
+        );
 
-        if (existItem) throw new Error("해당 상품이 이미 장바구니에 담겨있습니다.")
+        if (existItem) throw new Error("해당 상품이 이미 장바구니에 담겨있습니다.");
 
         // 카트에 아이템을 추가
-        cart.items = [...cart.items, { productId, size, qty }]
+        cart.items = [...cart.items, { productId, size, qty }];
+
+        await cart.save();
 
         return res.status(200).json({ status: "success", data: cart, cartItemQty: cart.items.length });
+    } catch (err) {
+        res.status(500).json({ status: "fail", error: err, message: err.message });
+    }
+};
 
+// 장바구니 아이템 가져오기
+cartController.getItemToCart = async (req, res) => {
+    try {
+        const { userId } = req;
+
+        // 유저를 가지고 카트 찾기
+        const cart = await Cart.findOne({ userId });
+
+        if (!cart) {
+            // 장바구니가 비어있을 때는 실패 상태 코드 반환
+            return res.status(500).json({ status: "fail", message: "장바구니가 비어 있습니다." });
+        }
+
+        return res.status(200).json({ status: "success", data: cart });
     } catch (err) {
         res.status(500).json({ status: "fail", error: err, message: err.message });
     }

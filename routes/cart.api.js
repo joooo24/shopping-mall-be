@@ -11,4 +11,10 @@ router.post('/',
     cartController.addItemToCart
 );
 
+// 토큰 검증 -> 장바구니 아이템 가져오기
+router.get('/',
+    authController.authenticate,
+    cartController.getItemToCart
+);
+
 module.exports = router;
