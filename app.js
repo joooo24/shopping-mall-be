@@ -15,7 +15,7 @@ app.use(bodyParser.json()); // req.body 객체 인식
 app.use("/api", indexRouter)
 
 // MongoDB 연결
-const mongoURI = process.env.LOCAL_DB_ADDRESS;
+const mongoURI = process.env.MONGODB_URI_PROD;
 mongoose.connect(mongoURI, { useNewUrlParser: true })
     .then(() => {
         console.log('MongoDB connected');
