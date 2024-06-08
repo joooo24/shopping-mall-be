@@ -17,4 +17,10 @@ router.get('/',
     cartController.getItemToCart
 );
 
+// 토큰 검증 -> 장바구니 아이템 삭제
+router.delete('/',
+    authController.authenticate,
+    cartController.removeItemFromCart
+);
+
 module.exports = router;
