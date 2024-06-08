@@ -23,4 +23,10 @@ router.delete('/',
     cartController.removeItemFromCart
 );
 
+// 토큰 검증 -> 장바구니 아이템 수량 변경
+router.put('/',
+    authController.authenticate,
+    cartController.updateItemQty
+);
+
 module.exports = router;
