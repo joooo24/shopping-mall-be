@@ -23,7 +23,7 @@ const orderSchema = Schema(
                 productId: { type: mongoose.ObjectId, ref: Product, required: true },
                 price: { type: Number, required: true },
                 qty: { type: Number, required: true, default: 1 },
-                size: { type: String, required: true },
+                option: { type: String, required: true },
             },
         ],
         // paymentMethod: {

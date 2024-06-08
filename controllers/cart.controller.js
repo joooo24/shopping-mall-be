@@ -6,7 +6,7 @@ const cartController = {};
 cartController.addItemToCart = async (req, res) => {
     try {
         const { userId } = req;
-        const { productId, size, qty } = req.body;
+        const { productId, option, qty } = req.body;
 
         // 유저를 가지고 카트 찾기
         let cart = await Cart.findOne({ userId });
@@ -20,13 +20,13 @@ cartController.addItemToCart = async (req, res) => {
         // 이미 카트에 들어가 있는 아이템인지 확인하기 -> 맞으면 에러
         const existItem = cart.items.find(
             // -> productId가 몽구스에서 사용하는 _id 값이여서 equals로 비교
-            (item) => item.productId.equals(productId) && item.size === size
+            (item) => item.productId.equals(productId) && item.option === option
         );
 
         if (existItem) throw new Error("해당 상품이 이미 장바구니에 담겨있습니다.");
 
         // 카트에 아이템을 추가
-        cart.items = [...cart.items, { productId, size, qty }];
+        cart.items = [...cart.items, { productId, option, qty }];
 
         await cart.save();
 
