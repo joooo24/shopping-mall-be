@@ -87,10 +87,7 @@ productController.getProductDetail = async (req, res) => {
         if (!product) {
             throw new Error("상품이 존재하지 않습니다.");
         }
-
-        console.log("### productId", productId)
-        console.log("### product", product)
-
+        
         // 상품이 존재하는 경우 상세 정보를 클라이언트로 응답
         return res.status(200).json({ status: "success", data: product });
     } catch (err) {
@@ -113,10 +110,10 @@ productController.updateProduct = async (req, res) => {
             { _id: productId }, // 조건: 상품 ID
             { sku, name, image, category, description, price, stock, status, isDelete }, // 업데이트할 데이터
             { new: true } // 업데이트된 데이터를 반환하도록 설정
-        )
+        );
 
         // 상품이 존재하지 않는 경우
-        if (!product) throw new Error("상품이 존재하지 않습니다.")
+        if (!product) throw new Error("상품이 존재하지 않습니다.");
 
         return res.status(200).json({ status: "success", data: product });
     } catch (err) {
@@ -142,6 +139,64 @@ productController.deleteProduct = async (req, res) => {
         }
 
         return res.status(200).json({ status: "success", data: product });
+    } catch (err) {
+        res.status(500).json({ status: "fail", error: err, message: err.message });
+    }
+};
+
+// 아이템 재고 확인
+productController.checkStock = async (item) => {
+    try {
+        // 주문할 아이템 재고 정보 들고오기 (상품_id로 상품 정보 조회)
+        const product = await Product.findById(item.productId);
+
+        // 내가 사려는 아이템 수량과 재고 비교
+        if (product.stock[item.option] < item.qty) {
+            // 재고가 불충분하다면 불충분 메시지와 함께 데이터 반환
+            return {
+                isVerify: false, // 재고 부족 여부 표시
+                message: `${product.name}의 ${item.option} 재고가 부족합니다`,
+            };
+        }
+
+        // 충분하다면 재고에서 주문 수량만큼 차감
+        const newStock = { ...product.stock }; // 현재 재고 복사
+        newStock[item.option] -= item.qty; // 구매 수량만큼 재고 차감
+        product.stock = newStock; // 업데이트된 재고 설정
+
+        // 변경된 재고 저장
+        await product.save();
+
+        // 충분하다면 true 반환
+        return { isVerify: true };
+    } catch (err) {
+        res.status(500).json({ status: "fail", error: err, message: err.message });
+    }
+};
+
+// 아이템 리스트 재고 확인 (createOrder에서 itemList(주문정보) 받아옴)
+productController.checkItemListStock = async (itemList) => {
+    try {
+        // 재고가 불충분한 아이템 저장할 변수
+        const insufficientStockItems = [];
+
+        // 각 아이템의 재고 확인
+        await Promise.all(
+            itemList.map(async (item) => {
+                const stockCheck = await productController.checkStock(item); // 각 아이템의 재고 확인
+                if (!stockCheck.isVerify) {
+                    // 재고가 불충분한 경우 리스트에 추가
+                    insufficientStockItems.push({
+                        item, // 재고가 불충분한 아이템
+                        message: stockCheck.message, // 불충분 메시지
+                    });
+                }
+                return stockCheck;
+            })
+        );
+
+        // 불충분한 아이템 리스트 반환
+        return insufficientStockItems;
     } catch (err) {
         res.status(500).json({ status: "fail", error: err, message: err.message });
     }
