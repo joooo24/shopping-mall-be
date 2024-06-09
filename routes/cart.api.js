@@ -20,4 +20,7 @@ router.post("/:id", authController.authenticate, cartController.removeItemFromCa
 // 토큰 검증 -> 장바구니 아이템 수량 변경
 router.put("/:id", authController.authenticate, cartController.updateItemQty);
 
+// 토큰 검증 -> 장바구니 수량 카운터
+router.get("/qty", authController.authenticate, cartController.getcartqty);
+
 module.exports = router;

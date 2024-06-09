@@ -122,4 +122,18 @@ cartController.updateItemQty = async (req, res) => {
     }
 };
 
+// 장바구니 아이템 수량 가져오기
+cartController.getcartqty = async (req, res) => {
+    try {
+        const { userId } = req;
+        const cart = await Cart.findOne({ userId: userId });
+
+        if (!cart) throw new Error("There is no cart!");
+
+        res.status(200).json({ status: 200, qty: cart.items.length });
+    } catch (err) {
+        return res.status(400).json({ status: "fail", error: err.message });
+    }
+};
+
 module.exports = cartController;
