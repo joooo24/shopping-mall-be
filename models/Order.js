@@ -15,7 +15,6 @@ const orderSchema = Schema(
         //     default: 'pending'
         // },
         totalPrice: { type: Number, required: true, default: 0 }, // 총 주문 가격
-        cartId: { type: mongoose.ObjectId, ref: Cart, required: true }, // 주문에 대한 장바구니 ID
         shipTo: { type: Object, required: true },
         contact: { type: Object, required: true },
         orderNum: { type: String },
