@@ -2,6 +2,7 @@ const Order = require("../models/Order");
 const { randomStringGenerator } = require("../utils/randomStringGenerator");
 const productController = require("./product.controller");
 
+const PAGE_SIZE = 5;
 const orderController = {};
 
 // 주문 생성
