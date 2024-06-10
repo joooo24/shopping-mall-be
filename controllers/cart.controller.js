@@ -96,8 +96,10 @@ cartController.editCartItem = async (req, res) => {
     try {
         const { userId } = req;
         const { id } = req.params;
-
+        
         const { qty } = req.body;
+
+        // userId로 사용자의 장바구니를 찾고, items와 해당 items의 productId를 populate 함
         const cart = await Cart.findOne({ userId }).populate({
             path: "items",
             populate: {
@@ -108,10 +110,16 @@ cartController.editCartItem = async (req, res) => {
 
         if (!cart) throw new Error("There is no cart for this user");
 
+        // 장바구니 항목 배열에서 특정 항목의 인덱스를 찾음
         const index = cart.items.findIndex((item) => item._id.equals(id));
+
+        // 해당 항목을 찾지 못한 경우 에러
         if (index === -1) throw new Error("Can not find item");
+
+        // 항목의 수량을 업데이트 함
         cart.items[index].qty = qty;
 
+        // 변경된 장바구니 저장
         await cart.save();
         res.status(200).json({ status: 200, data: cart.items });
     } catch (error) {
