@@ -15,12 +15,12 @@ router.get("/", authController.authenticate, cartController.getItemToCart);
 router.delete("/", authController.authenticate, cartController.emptyCart);
 
 // 토큰 검증 -> 장바구니 아이템 삭제
-router.post("/:id", authController.authenticate, cartController.removeItemFromCart);
+router.delete("/:id", authController.authenticate, cartController.deleteCartItem);
 
 // 토큰 검증 -> 장바구니 아이템 수량 변경
-router.put("/:id", authController.authenticate, cartController.updateItemQty);
+router.put("/:id", authController.authenticate, cartController.editCartItem);
 
 // 토큰 검증 -> 장바구니 수량 카운터
-router.get("/qty", authController.authenticate, cartController.getcartqty);
+router.get("/qty", authController.authenticate, cartController.getCartQty);
 
 module.exports = router;
