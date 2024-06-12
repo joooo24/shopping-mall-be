@@ -40,7 +40,7 @@ orderController.createOrder = async (req, res) => {
         await newOrder.save();
 
         // 성공 응답 전송
-        res.status(201).json({ status: "success", data: newOrder });
+        res.status(200).json({ status: "success", data: newOrder });
     } catch (err) {
         res.status(500).json({ status: "fail", error: err, message: err.message });
     }
@@ -106,7 +106,7 @@ orderController.getOrderList = async (req, res, next) => {
             .skip((page - 1) * PAGE_SIZE) // 페이지네이션 적용
             .limit(PAGE_SIZE); // 페이지당 항목 수 제한
         // 조건에 맞는 전체 주문 수를 계산
-        const totalItemNum = await Order.find(cond).count();
+        const totalItemNum = await Order.find(condition).count();
 
         // 전체 페이지 수를 계산
         const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE);
