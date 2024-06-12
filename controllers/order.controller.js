@@ -94,18 +94,14 @@ orderController.getOrderList = async (req, res, next) => {
             };
         }
 
-        // 쿼리를 생성: condition에 따라 주문을 조회 함
-        let query = Order.find(condition);
-
         // 전체 데이터 개수
         const totalItemNum = await Order.find(condition).count();
 
         // 전체 페이지 수를 계산
         const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE);
 
-        // condition 찾을 때까지 기다렸다가 조건에 맞는 orderList 실행 후 페이지네이션 적용
-        const orderList = await query
-            .exec(condition)
+        // condition에 맞는 orderList 찾고 페이지네이션 적용
+        const orderList = await Order.find(condition)
             .populate("userId") // userId를 populate 함
             .populate({
                 path: "items",
