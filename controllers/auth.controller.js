@@ -46,10 +46,10 @@ authController.loginWithGoogle = async (req, res) => {
         const ticket = await googleClient.verifyIdToken({
             idToken: token,
             audience: GOOGLE_CLIENT_ID
-        })
+        });
 
         // ticket에서 email, name정보 가져오기
-        const { email, name } = ticket.getPayload;
+        const { email, name } = ticket.getPayload();
 
         // User에서 email로 유저 정보 가져오기
         let user = await User.findOne({ email });
@@ -60,7 +60,7 @@ authController.loginWithGoogle = async (req, res) => {
         if (!user) {
             // 랜던 비밀번호 생성 후 암호화
             const randomPassword = "" + Math.floor(Math.random() * 100000000)
-            const salt = awaitbcrypt.genSalt(10);
+            const salt = await bcrypt.genSalt(10);
             const newPassword = await bcrypt.hash(randomPassword, salt);
 
             // 유저를 새로 생성
@@ -73,8 +73,8 @@ authController.loginWithGoogle = async (req, res) => {
         }
 
         // 공통: 토큰 발행 후 리턴
-        const sesstionToken = await user.generateToken();
-        return res.status(200).json({ status: "success", user, token: sesstionToken });
+        const sessionToken = await user.generateToken();
+        return res.status(200).json({ status: "success", user, token: sessionToken });
 
     } catch (err) {
         res.status(500).json({ status: "fail", error: err, message: err.message });
