@@ -38,7 +38,7 @@ productController.getProducts = async (req, res) => {
         const condition = name ? { name: { $regex: name, $options: "i" } } : {};
         // const condition = name ? { name: { $regex: new RegExp(name, "i") } } : {};
 
-        // condition에 따라 상품을 조회 함
+        // 쿼리를 생성: condition에 따라 상품을 조회 함
         let query = Product.find(condition);
 
         // 페이지네이션 로직
@@ -48,17 +48,15 @@ productController.getProducts = async (req, res) => {
             query.skip((page - 1) * PAGE_SIZE).limit(PAGE_SIZE);
         }
 
-        // 총 데이터 개수 -> 응답 데이터 추가
+        // 전체 데이터 개수 -> 응답 데이터 추가
         const totalItemNum = await Product.find(condition).count();
         // response.totalItemNum = totalItemNum;
 
-        // 총 페이지 개수 -> 응답 데이터 추가
+        // 전체 페이지 개수 -> 응답 데이터 추가
         const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE);
-        // response.totalPageNum = totalPageNum;
 
         // condition 찾을 때까지 기다렸다가 실행 -> 응답 데이터 추가
         const productList = await query.exec(condition);
-        // response.data = productList;
 
         // 응답 개체 생성
         const response = {

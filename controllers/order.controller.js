@@ -80,20 +80,32 @@ orderController.getOrder = async (req, res, next) => {
 // 주문 목록 가져오기
 orderController.getOrderList = async (req, res, next) => {
     try {
-        // 요청 쿼리에서 페이지 번호와 주문 번호를 가져옴
+        // query에서 가져온 파라미터(page, ordernum)
         const { page, ordernum } = req.query;
 
         // 조건 객체를 초기화
         let condition = {};
-        // 주문 번호가 쿼리에 존재하는 경우, 조건 객체에 정규 표현식 조건 추가
+
+        // orderNum이 쿼리에 있다면 -> 조건 객체에 정규 표현식 조건 추가
+        // orderNum을 포함하기만 하면 되고, 대소문자 구분하지 않겠다.
         if (ordernum) {
             condition = {
                 orderNum: { $regex: ordernum, $options: "i" },
             };
         }
 
-        // 조건에 맞는 주문 목록을 페이지네이션 적용하여 가져옴
-        const orderList = await Order.find(condition)
+        // 쿼리를 생성: condition에 따라 주문을 조회 함
+        let query = Order.find(condition);
+
+        // 전체 데이터 개수
+        const totalItemNum = await Order.find(condition).count();
+
+        // 전체 페이지 수를 계산
+        const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE);
+
+        // condition 찾을 때까지 기다렸다가 조건에 맞는 orderList 실행 후 페이지네이션 적용
+        const orderList = await query
+            .exec(condition)
             .populate("userId") // userId를 populate 함
             .populate({
                 path: "items",
@@ -105,14 +117,16 @@ orderController.getOrderList = async (req, res, next) => {
             })
             .skip((page - 1) * PAGE_SIZE) // 페이지네이션 적용
             .limit(PAGE_SIZE); // 페이지당 항목 수 제한
-        // 조건에 맞는 전체 주문 수를 계산
-        const totalItemNum = await Order.find(condition).count();
 
-        // 전체 페이지 수를 계산
-        const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE);
+        // 응답 개체 생성
+        const response = {
+            status: "success",
+            data: orderList,
+            totalItemNum: totalItemNum,
+            totalPageNum: totalPageNum,
+        };
 
-        // 주문 목록과 총 페이지 수를 응답으로 반환
-        res.status(200).json({ status: "success", data: orderList, totalPageNum });
+        res.status(200).json(response);
     } catch (error) {
         return res.status(400).json({ status: "fail", error: error.message });
     }
