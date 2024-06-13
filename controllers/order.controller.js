@@ -81,7 +81,7 @@ orderController.getOrder = async (req, res, next) => {
 orderController.getOrderList = async (req, res, next) => {
     try {
         // query에서 가져온 파라미터(page, ordernum)
-        const { page, ordernum } = req.query;
+        const { page = 1, ordernum } = req.query;
 
         // 조건 객체를 초기화
         let condition = {};
