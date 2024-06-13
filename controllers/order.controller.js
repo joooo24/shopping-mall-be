@@ -78,54 +78,91 @@ orderController.getOrder = async (req, res, next) => {
 };
 
 // 주문 목록 가져오기
-orderController.getOrderList = async (req, res, next) => {
+orderController.getOrderList = async (req, res) => {
     try {
-        // query에서 가져온 파라미터(page, ordernum)
-        const { page, ordernum } = req.query;
+        const { page = 1, ordernum } = req.query; // page의 기본값을 1로 설정
 
-        // 조건 객체를 초기화
-        let condition = {};
+        // 검색 조건
+        // ordernum이 있을 경우 정규 표현식을 사용하여 조건에 추가
+        const condition = {
+            ...(ordernum && { orderNum: { $regex: ordernum, $options: "i" } }),
+        };
 
-        // orderNum이 쿼리에 있다면 -> 조건 객체에 정규 표현식 조건 추가
-        // orderNum을 포함하기만 하면 되고, 대소문자 구분하지 않겠다.
-        if (ordernum) {
-            condition = {
-                orderNum: { $regex: ordernum, $options: "i" },
-            };
+        // 조건에 맞는 주문을 찾고, items의 productId와 userId를 각각 채움
+        const query = Order.find(condition).populate(`items.productId`).populate({
+            path: "userId",
+            select: "email",
+        });
+
+        let response = { status: "success" };
+
+        if (page) {
+            // 페이지네이션 처리
+            // limit: 한 페이지에 몇 개의 항목을 표시할지 설정
+            // skip: 건너뛸 항목의 수를 계산하여 설정
+            query.skip((page - 1) * PAGE_SIZE).limit(PAGE_SIZE);
+
+            // 총 항목 수를 구하고, 총 페이지 수를 계산
+            const totalItemNum = await Order.find(condition).count();
+            const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE);
+            response.totalPageNum = totalPageNum;
         }
 
-        // 전체 데이터 개수
-        const totalItemNum = await Order.find(condition).count();
-
-        // 전체 페이지 수를 계산
-        const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE);
-
-        // condition에 맞는 orderList 찾고 페이지네이션 적용
-        const orderList = await Order.find(condition)
-            .populate("userId") // userId를 populate 함
-            .populate({
-                path: "items",
-                populate: {
-                    path: "productId",
-                    model: "Product",
-                    select: "image name",
-                },
-            })
-            .skip((page - 1) * PAGE_SIZE) // 페이지네이션 적용
-            .limit(PAGE_SIZE); // 페이지당 항목 수 제한
-
-        // 응답 개체 생성
-        const response = {
-            status: "success",
-            data: orderList,
-            totalItemNum: totalItemNum,
-            totalPageNum: totalPageNum,
-        };
+        // 쿼리를 실행하여 주문 목록을 가져옵니다.
+        const orderList = await query.exec();
+        response.data = orderList;
 
         res.status(200).json(response);
     } catch (error) {
-        return res.status(400).json({ status: "fail", error: error.message });
+        res.status(400).json({ status: "fail", error: error.message });
     }
+    // try {
+    //     // query에서 가져온 파라미터(page, ordernum)
+    //     const { page, ordernum } = req.query;
+
+    //     // 조건 객체를 초기화
+    //     let condition = {};
+
+    //     // orderNum이 쿼리에 있다면 -> 조건 객체에 정규 표현식 조건 추가
+    //     // orderNum을 포함하기만 하면 되고, 대소문자 구분하지 않겠다.
+    //     if (ordernum) {
+    //         condition = {
+    //             orderNum: { $regex: ordernum, $options: "i" },
+    //         };
+    //     }
+
+    //     // 전체 데이터 개수
+    //     const totalItemNum = await Order.find(condition).count();
+
+    //     // 전체 페이지 수를 계산
+    //     const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE);
+
+    //     // condition에 맞는 orderList 찾고 페이지네이션 적용
+    //     const orderList = await Order.find(condition)
+    //         .populate("userId") // userId를 populate 함
+    //         .populate({
+    //             path: "items",
+    //             populate: {
+    //                 path: "productId",
+    //                 model: "Product",
+    //                 select: "image name",
+    //             },
+    //         })
+    //         .skip((page - 1) * PAGE_SIZE) // 페이지네이션 적용
+    //         .limit(PAGE_SIZE); // 페이지당 항목 수 제한
+
+    //     // 응답 개체 생성
+    //     const response = {
+    //         status: "success",
+    //         data: orderList,
+    //         totalItemNum: totalItemNum,
+    //         totalPageNum: totalPageNum,
+    //     };
+
+    //     res.status(200).json(response);
+    // } catch (error) {
+    //     return res.status(400).json({ status: "fail", error: error.message });
+    // }
 };
 
 // 주문 상태 업데이트
