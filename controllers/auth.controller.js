@@ -58,7 +58,7 @@ authController.loginWithGoogle = async (req, res) => {
         // 2. 처음 로그인 한다면? -> 유저 정보 생성 -> 로그인 -> 토큰 발행
 
         if (!user) {
-            // 랜던 비밀번호 생성 후 암호화
+            // 랜덤 비밀번호 생성 후 암호화
             const randomPassword = "" + Math.floor(Math.random() * 100000000)
             const salt = await bcrypt.genSalt(10);
             const newPassword = await bcrypt.hash(randomPassword, salt);
