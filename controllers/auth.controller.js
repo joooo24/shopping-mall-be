@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+const { OAuth2Client } = require('google-auth-library');
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
 const authController = {};
 
@@ -28,6 +30,51 @@ authController.loginWithEmail = async (req, res) => {
         }
 
         throw new Error("아이디 또는 비밀번호가 일치하지 않습니다");
+
+    } catch (err) {
+        res.status(500).json({ status: "fail", error: err, message: err.message });
+    }
+}
+
+// 로그인 - 구글
+authController.loginWithGoogle = async (req, res) => {
+    try {
+        const { token } = req.body;
+        const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+
+        // token을 GOOGLE_CLIENT_ID값으로 맞는지 확인
+        const ticket = await googleClient.verifyIdToken({
+            idToken: token,
+            audience: GOOGLE_CLIENT_ID
+        });
+
+        // ticket에서 email, name정보 가져오기
+        const { email, name } = ticket.getPayload();
+
+        // User에서 email로 유저 정보 가져오기
+        let user = await User.findOne({ email });
+
+        // 1. 이미 로그인 한 적이 있다면? -> 로그인 -> 토큰 발행
+        // 2. 처음 로그인 한다면? -> 유저 정보 생성 -> 로그인 -> 토큰 발행
+
+        if (!user) {
+            // 랜던 비밀번호 생성 후 암호화
+            const randomPassword = "" + Math.floor(Math.random() * 100000000)
+            const salt = await bcrypt.genSalt(10);
+            const newPassword = await bcrypt.hash(randomPassword, salt);
+
+            // 유저를 새로 생성
+            user = new User({
+                name, email, password: newPassword
+            })
+
+            // 유저 정보 저장
+            await user.save();
+        }
+
+        // 공통: 토큰 발행 후 리턴
+        const sessionToken = await user.generateToken();
+        return res.status(200).json({ status: "success", user, token: sessionToken });
 
     } catch (err) {
         res.status(500).json({ status: "fail", error: err, message: err.message });
